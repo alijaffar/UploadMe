@@ -1,28 +1,38 @@
 <?php
 include './res/header.php';
+$removal_code = isset($_REQUEST['rmcode']) ? $_REQUEST['rmcode'] : '';
+$removal_file = isset($_REQUEST['filename']) ? $_REQUEST['filename'] : '';
 
-if (isset($_POST['postbut'])) {
+if ($removal_file && $removal_code) { // on form submission
     $s = "SELECT COUNT(*) AS num FROM `" . $config['mysql-table'] . "` WHERE `name` = ?";
     $query = $database->prepare($s);
-    $query->bind_param("s", $_POST['filename']);
+    $query->bind_param("s", $removal_file);
     $query->execute();
     $result = $query->get_result();
 
     $gethash = $database->prepare("SELECT `removalcode` FROM `" . $config['mysql-table'] . "` WHERE `name` = ?");
-    $gethash->bind_param("s", $_POST["filename"]);
+    $gethash->bind_param("s", $removal_file);
     $gethash->execute();
     $gethash->bind_result($hash);
 
     if ($row2 = $gethash->fetch()) {
         require __DIR__."/lib/password.php";
-        if (password_verify($_POST['rmcode'], $hash)) {
-            $st = "DELETE FROM `" . $config['mysql-table'] . "` WHERE `name` = ?";
+        if (password_verify($removal_code, $hash)) {
+
+			$conn = new mysqli($config['mysql-host'], $config['mysql-username'],  $config['mysql-password'], $config['mysql-database']);
+			if ($conn->connect_error) {die("Connection failed: " . $conn->connect_error);}
+			$queryNew = "DELETE FROM ".$config['mysql-table']." WHERE name LIKE '".$conn->real_escape_string($removal_file)."'";
+			
+			if ($conn->query($queryNew) === TRUE) {  // Connect & run sql w/ msg
+				 $output = "File removed. It's like it never existed!";
+			} else { $output=null;}
+			$conn->close;
+            /* $st = "DELETE FROM " . $config['mysql-table'] . " WHERE name LIKE ?";
             echo $st;
             $q1 = $database->prepare($st);
             var_dump($database->error);
-            $q1->bind_param("s", $_POST['filename']);
-            $q1->execute();
-            $output = "File removed. It's like it never existed!";
+            $q1->bind_param("s", $removal_file);
+            $q1->execute(); */
         }
     }
 }
