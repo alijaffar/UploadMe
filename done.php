@@ -13,8 +13,8 @@ $url = "https://" . $_SERVER['HTTP_HOST'] . "/download?file=" . $_GET["file"];
 
     <p class="lead">Use this link to download your file:</p>
     <?php echo '<pre style="width: 450px"><a href="' . $url . '">' . $url . '</a></pre>'; ?>
-    <p class="lead">Your removal code is:</p>
-    <?php echo '<pre style="width: 450px">' . $_SESSION["rmcode"] . '</pre>'; ?>
+    <p class="lead">Your removal link/code is:</p>
+    <?php echo '<pre style="width: 450px"><a onclick="return confirm(\'Are you sure you want delete this now?\')" href="http://'. $_SERVER['HTTP_HOST'] .'/remove?filename='. $_GET["file"].'&rmcode=' . $_SESSION["rmcode"] . '">' . $_SESSION["rmcode"] . '</a></pre>'; ?>
     <p>Keep this code secret and in a good place.<br>You'll need it if you ever want to remove the file
         from the system.</p>
 </div>
