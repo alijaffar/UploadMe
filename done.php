@@ -8,6 +8,11 @@ include './res/header.php';
 
 $url = "https://" . $_SERVER['HTTP_HOST'] . "/download?file=" . $_GET["file"];
 ?>
+<script>
+$( document ).ready(function() {
+	window.history.pushState('obj', 'Sort by Site', '<?=$url?>');
+});
+</script>
 <div class="content done">
     <h1>Success!</h1><br>
 
